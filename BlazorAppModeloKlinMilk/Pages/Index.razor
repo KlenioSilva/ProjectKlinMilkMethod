@@ -1,0 +1,441 @@
+﻿@page "/"
+
+@using BlazorAppModeloKlinMilk.EF
+@using BlazorAppModeloKlinMilk.Models
+@using BlazorAppModeloKlinMilk.Data
+@using BlazorAppModeloKlinMilk.CrossCutting
+@using System.Net;
+
+@inject NavigationManager NavigationManager
+@inject AcessoEntityModel appAcessoEntityModel
+@inject TipoPlano tipoPlano
+
+<PageTitle>Portal DevAIInAction.net V.1.0.</PageTitle>
+
+@{
+    Email = appAcessoEntityModel.Email;
+    if (primVez)
+        ObterDias();
+}
+
+<div style="background-color:black;">
+    @if (!string.IsNullOrEmpty(mensagemDeErro))
+    {
+        <div class="alert alert-danger" style="font-size:12px" role="alert">
+            @mensagemDeErro
+        </div>
+    }
+    <div class="form-group">
+        <label for="nome" style="color:white">Logon:</label>
+        <input @bind="Logon" id="logon" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="descricao" style="color:white">E-mail:</label>
+        <input @bind="appAcessoEntityModel.Email" id="email" class="form-control" />
+    </div>
+    <br />
+    <div style="display: flex; justify-content: center; align-items: center; height: 5vh;">
+        <button class="@blinkClass blinking-label-1" @onclick="Authorize" style="padding: 8px 16px;">Login</button>
+    </div>
+    <hr style="color:white;" />
+    <table>
+        <tr style="align-content:center">
+            <td>
+                <Planos />
+            </td>
+        </tr>
+    </table>
+</div>
+
+@code{
+    string escolha = string.Empty;
+    private string mensagemDeErro = "";
+    private string? Logon { get; set; }
+    private string? Email { get; set; }
+    private string? Chave { get; set; }
+    private bool primVez { get; set; } = true;
+    private bool devNovo { get; set; } = false;
+    private string authorizationKey = "";
+    private string msgChave = "";
+    private int dias = 0;
+    private string diasOuDia = "";
+    private Int16 planoAtual = 0;
+
+    string blinkClass = "blinking-label";
+
+    // Lógica para alternar a classe de piscar
+    protected override Task OnInitializedAsync()
+    {
+        ToggleBlinking();
+        return base.OnInitializedAsync();
+    }
+
+    async Task ToggleBlinking()
+    {
+        while (true)
+        {
+            await Task.Delay(1000); // Intervalo de tempo para alternar a classe (1 segundo no exemplo)
+
+            if (blinkClass == "blinking-label")
+                blinkClass = "";
+            else
+                blinkClass = "blinking-label";
+
+            StateHasChanged(); // Notificar o Blazor que a classe foi atualizada
+        }
+    }
+
+    // private async Task RespostaUsuario(bool resposta)
+    // {
+    //     if (resposta)
+    //     {
+    //         // Ação para quando o usuário clica em "Sim"
+    //         // Faça o que for necessário aqui
+    //         Console.WriteLine("Usuário clicou em Sim");
+    //     }
+    //     else
+    //     {
+    //         // Ação para quando o usuário clica em "Não"
+    //         // Faça o que for necessário aqui
+    //         Console.WriteLine("Usuário clicou em Não");
+    //     }
+    // }
+
+    private void ObterDias()
+    {
+        primVez = false;
+        using (Context dbContext = new Context())
+        {
+            dias = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+            if (dias > 1)
+                diasOuDia = "Dias";
+            else
+                diasOuDia = "Dia";
+        }
+    }
+
+    private async Task Authorize()
+    {
+        Int16 expiraUsuario = 0;
+        string IPLocal = string.Empty;
+        string hostName = Dns.GetHostName();
+        try
+        {
+            IPAddress[] ipv4Addresses = Dns.GetHostAddresses(hostName);
+            foreach (IPAddress ip in ipv4Addresses)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    IPLocal = ip.ToString();
+                }
+            }
+            if (tipoPlano.Id != 0 || planoAtual != 0)
+            {
+                string? strChave = string.Empty;
+                using (Context dbContext = new Context())
+                {
+                    string? logon = string.Empty;
+
+                    var acesso = dbContext.Acessos.Where(x => x.IP == IPLocal).FirstOrDefault();
+                    if (acesso != null)
+                    {
+                        acesso = dbContext.Acessos.Where(x => x.Email == appAcessoEntityModel.Email).FirstOrDefault();
+                        if (acesso != null)
+                        {
+                            int diasExpirar = (acesso.DataExpiracao - DateTime.Now).Days;
+                            if (diasExpirar > 0)
+                            {
+                                if (acesso.Autorizado == true)
+                                {
+                                    AuthorizationService.SetAuthorization(true);
+                                    NavigationManager.NavigateTo($"/NavMenu/");
+
+                                    // expiraUsuario = 0;
+
+                                    // if (tipoPlano.Id > 0)
+                                    // {
+                                    //     switch (tipoPlano.Id)
+                                    //     {
+                                    //         case 1:
+                                    //             expiraUsuario = 30;
+                                    //             break;
+                                    //         case 2:
+                                    //             expiraUsuario = 60;
+                                    //             break;
+                                    //         case 3:
+                                    //             expiraUsuario = 90;
+                                    //             break;
+                                    //         case 4:
+                                    //             expiraUsuario = 180;
+                                    //             break;
+                                    //         case 5:
+                                    //             expiraUsuario = 365;
+                                    //             break;
+                                    //         case 6:
+                                    //             expiraUsuario = 9999;
+                                    //             break;
+                                    //     }
+                                    // }
+
+                                    // if (tipoPlano.Id != 0 && tipoPlano.Id != planoAtual)
+                                    // {
+                                    //     acesso = new AcessoEntityModel() { Chave = acesso.Chave, IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = DateTime.Now.AddDays(expiraUsuario), Dias = expiraUsuario };
+                                    //     dbContext.Acessos.Update(acesso);
+                                    //     dbContext.SaveChanges();
+                                    // }
+                                    // else
+                                    // {
+                                    //     AuthorizationService.SetAuthorization(true);
+                                    //     NavigationManager.NavigateTo($"/NavMenu/");
+                                    // }
+                                }
+                                else
+                                {
+                                    int diasAcessoGenerico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+                                    diasExpirar = acesso != null ? (acesso.DataExpiracao - DateTime.Now).Days : 0;
+                                    if (diasAcessoGenerico > 0 && diasExpirar > 0)
+                                    {
+                                        AuthorizationService.SetAuthorization(true);
+                                        NavigationManager.NavigateTo($"/NavMenu/");
+                                    }
+                                    else
+                                        mensagemDeErro = "Solicite seu acesso mediante comprovação do pagamento, pelo link do Grupo no Whatsapp.";
+                                }
+                            }
+                            else
+                            {
+                                mensagemDeErro = "Sua licença está expirada, solicite seu acesso ao Administrador do Portal DevAIInAction.net pelo Whatsapp: (11) 91399-3756.";
+                            }
+                        }
+                        else
+                        {
+                            acesso = dbContext.Acessos.Where(y => y.Id == 1).FirstOrDefault();
+                            if (acesso != null)
+                            {
+                                int diasAcessoGenerico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+                                int diasExpirar = acesso != null ? (acesso.DataExpiracao - DateTime.Now).Days : 0;
+                                if (diasAcessoGenerico > 0 && diasExpirar > 0)
+                                {
+                                    Chave = Guid.NewGuid().ToString();
+
+                                    expiraUsuario = 0;
+
+                                    if (tipoPlano.Id > 0)
+                                    {
+                                        switch (tipoPlano.Id)
+                                        {
+                                            case 1 :
+                                                expiraUsuario = 30;
+                                                break;
+                                            case 2 :
+                                                expiraUsuario = 60;
+                                                break;
+                                            case 3 :
+                                                expiraUsuario = 90;
+                                                break;
+                                            case 4:
+                                                expiraUsuario = 180;
+                                                break;
+                                            case 5:
+                                                expiraUsuario = 365;
+                                                break;
+                                            case 6:
+                                                expiraUsuario = 9999;
+                                                break;
+                                        }
+                                    }
+
+                                    acesso = new AcessoEntityModel() { Chave = this.Chave, IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = DateTime.Now.AddDays(expiraUsuario), Dias = expiraUsuario };
+                                    dbContext.Acessos.Add(acesso);
+                                    dbContext.SaveChanges();
+
+                                    devNovo = true;
+
+                                    mensagemDeErro = "Solicite seu acesso mediante comprovação do pagamento, pelo link do Grupo no Whatsapp.";
+                                }
+                                else
+                                {
+                                    Chave = Guid.NewGuid().ToString();
+
+                                    expiraUsuario = 0;
+
+                                    if (tipoPlano.Id > 0)
+                                    {
+                                        switch (tipoPlano.Id)
+                                        {
+                                            case 1:
+                                                expiraUsuario = 30;
+                                                break;
+                                            case 2:
+                                                expiraUsuario = 60;
+                                                break;
+                                            case 3:
+                                                expiraUsuario = 90;
+                                                break;
+                                            case 4:
+                                                expiraUsuario = 180;
+                                                break;
+                                            case 5:
+                                                expiraUsuario = 365;
+                                                break;
+                                            case 6:
+                                                expiraUsuario = 9999;
+                                                break;
+                                        }
+                                    }
+
+                                    acesso = new AcessoEntityModel() { Chave = this.Chave, IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = DateTime.Now.AddDays(expiraUsuario), Dias = expiraUsuario };
+                                    dbContext.Acessos.Add(acesso);
+                                    dbContext.SaveChanges();
+
+                                    devNovo = true;
+
+                                    mensagemDeErro = "Solicite seu acesso mediante comprovação do pagamento, pelo link do Grupo no Whatsapp.";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        acesso = dbContext.Acessos.Where(y => y.Id == 1).FirstOrDefault();
+                        if (acesso != null)
+                        {
+                            int diasAcessoGenerico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+                            DateTime dataExpiraGerenico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.DataExpiracao).First();
+                            int diasExpirar = dataExpiraGerenico.Day > 0 ? (dataExpiraGerenico - DateTime.Now).Days : 0;
+                            if (diasAcessoGenerico > 0 && diasExpirar > 0)
+                            {
+                                Chave = Guid.NewGuid().ToString();
+
+                                tipoPlano.Id = 1;
+
+                                if (tipoPlano.Id > 0)
+                                {
+                                    switch (tipoPlano.Id)
+                                    {
+                                        case 1:
+                                            expiraUsuario = 30;
+                                            break;
+                                        case 2:
+                                            expiraUsuario = 60;
+                                            break;
+                                        case 3:
+                                            expiraUsuario = 90;
+                                            break;
+                                        case 4:
+                                            expiraUsuario = 180;
+                                            break;
+                                        case 5:
+                                            expiraUsuario = 365;
+                                            break;
+                                        case 6:
+                                            expiraUsuario = 9999;
+                                            break;
+                                    }
+                                }
+
+                                acesso = new AcessoEntityModel() { Chave = this.Chave, IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = dataExpiraGerenico.AddDays(expiraUsuario), Dias = expiraUsuario };
+                                dbContext.Acessos.Add(acesso);
+                                dbContext.SaveChanges();
+
+                                devNovo = true;
+
+                                AuthorizationService.SetAuthorization(true);
+                                NavigationManager.NavigateTo($"/NavMenu/");
+                            }
+                            else if (diasExpirar == 0)
+                            {
+                                if (tipoPlano.Id == 0)
+                                {
+                                    mensagemDeErro = "Você deve clicar no botão [Concordo com a Doação Voluntária para Acesso Anual] e em seguida no botão [Login]";
+                                    return;
+                                }
+
+                                expiraUsuario = dbContext.Params.Select(x => x.ExpiraUsuario).FirstOrDefault();
+                                acesso = new AcessoEntityModel() { Chave = Guid.NewGuid().ToString(), IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = dataExpiraGerenico.AddDays(expiraUsuario), Dias = expiraUsuario };
+                                dbContext.Acessos.Add(acesso);
+                                dbContext.SaveChanges();
+
+                                devNovo = true;
+
+                                mensagemDeErro = "Solicite seu acesso em nosso grupo de whatsapp, mediante comprovação de pagamento.";
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (Context dbContext = new Context())
+                {
+                    expiraUsuario = dbContext.Params.Select(x => x.ExpiraUsuario).FirstOrDefault();
+                    if (Logon == null || Logon == "")
+                    {
+                        mensagemDeErro = "Informe seu Logon.";
+                        return;
+                    }
+
+                    if (Email == null || Email == "")
+                    {
+                        mensagemDeErro = "Informe seu E-mail.";
+                        return;
+                    }
+
+                    var acesso = dbContext.Acessos.Where(x => x.Email == appAcessoEntityModel.Email).FirstOrDefault();
+                    if (acesso != null)
+                    {
+                        int diasAcessoGenerico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+                        int diasExpirar = acesso != null ? (acesso.DataExpiracao - DateTime.Now).Days : 0;
+                        if (diasAcessoGenerico > 0 && diasExpirar > 0)
+                        {
+                            if (acesso.Autorizado == true)
+                            {
+                                AuthorizationService.SetAuthorization(true);
+                                NavigationManager.NavigateTo($"/NavMenu/");
+                            }
+                            else
+                            {
+                                planoAtual = acesso.TipoPlano;
+                                mensagemDeErro = "Solicite autorização de seu primeiro acesso em nosso grupo de whatsapp, mediante comprovação de pagamento.";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int diasAcessoGenerico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.Dias).First();
+                        DateTime dataExpiraGerenico = dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.DataExpiracao).First();
+                        int diasExpirar = dataExpiraGerenico.Day > 0 ? (dataExpiraGerenico - DateTime.Now).Days : 0;
+                        if (diasAcessoGenerico > 0 && diasExpirar > 0)
+                        {
+                            planoAtual = 1;
+                            mensagemDeErro = "Bem vindo! Catrastre-se. Você deve confirmar sua acesão ao Projeto AmigoDev da DevAIInAction.net, porém você tem acesso gratuito até: " + dbContext.Acessos.Where(y => y.Id == 1).Select(x => x.DataExpiracao).First() + ". Caso não selecione, o plano padrão será o Anual: após ativação via Whatsapp.";
+                        }
+                        else if (diasExpirar == 0)
+                        {
+                            if (tipoPlano.Id == 0)
+                            {
+                                mensagemDeErro = "Você deve clicar no botão [Concordo com a Doação Voluntária para Acesso Anual] e em seguida no botão [Login]";
+                                return;
+                            }
+
+                            expiraUsuario = dbContext.Params.Select(x => x.ExpiraUsuario).FirstOrDefault();
+                            acesso = new AcessoEntityModel() { Chave = Guid.NewGuid().ToString(), IP = IPLocal, Logon = this.Logon, Email = this.Email, Autorizado = false, TipoPlano = tipoPlano.Id, DataExpiracao = dataExpiraGerenico.AddDays(expiraUsuario), Dias = expiraUsuario };
+                            dbContext.Acessos.Add(acesso);
+                            dbContext.SaveChanges();
+
+                            devNovo = true;
+
+                            mensagemDeErro = "Solicite seu acesso em nosso grupo de whatsapp, mediante comprovação de pagamento.";
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+}
+
+    

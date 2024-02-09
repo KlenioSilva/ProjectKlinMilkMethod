@@ -1,0 +1,53 @@
+﻿@page "/"
+@model IndexModel
+
+@using AppRazorDevAIInAction.EF
+@using AppRazorDevAIInAction.Models
+@using AppRazorDevAIInAction.Data
+@using AppRazorDevAIInAction.CrossCutting
+@using System.Net
+@using AppRazorDevAIInAction.Shared
+@using Microsoft.AspNetCore.Components
+
+@{
+    var mensagem = TempData["Mensagem"] as string;
+}
+
+<h1>Portal DevAIInAction.net V.1.0.</h1>
+
+<div style="background-color:black;">
+    @if (!string.IsNullOrEmpty(mensagem))
+    {
+        <div class="alert alert-danger" style="font-size:12px" role="alert">
+            @mensagem
+        </div>
+    }
+    <form method="post">
+        <div class="form-group">
+            <label for="Logon" style="color:white">Logon:</label>
+            <input asp-for="Logon" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="Email" style="color:white">E-mail:</label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <br />
+        <div style="display: flex; justify-content: center; align-items: center; height: 5vh;">
+            <button type="submit" class="@Model.BlinkClass" style="padding: 8px 16px;">Login</button>
+        </div>
+    </form>
+    <hr style="color:white;" />
+    <table>
+        <tr style="align-content:center">
+            <td>
+                @Html.Partial("Planos")
+            </td>
+        </tr>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+        // Adicione seu script JavaScript aqui, se necessário
+    </script>
+}

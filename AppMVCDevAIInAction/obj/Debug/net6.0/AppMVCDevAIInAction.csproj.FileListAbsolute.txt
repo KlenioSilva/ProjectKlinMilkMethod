@@ -1,0 +1,8 @@
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.csproj.AssemblyReference.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.AssemblyInfo.cs
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.RazorAssemblyInfo.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\AppMVCDevAIInAction\obj\Debug\net6.0\AppMVCDevAIInAction.RazorAssemblyInfo.cs

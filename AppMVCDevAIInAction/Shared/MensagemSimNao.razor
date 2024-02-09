@@ -1,0 +1,25 @@
+﻿<div class="modal">
+    <div class="modal-content">
+        <p>@Mensagem</p>
+        <button @onclick="ResponderSim">Sim</button>
+        <button @onclick="ResponderNao">Não</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnResposta { get; set; }
+
+    private async Task ResponderSim()
+    {
+        await OnResposta.InvokeAsync(true);
+    }
+
+    private async Task ResponderNao()
+    {
+        await OnResposta.InvokeAsync(false);
+    }
+}

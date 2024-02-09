@@ -1,0 +1,176 @@
+﻿@using AppRazorDevAIInAction.CrossCutting
+@using AppRazorDevAIInAction.Shared
+
+@inject TipoPlano tipoPlano;
+
+@{
+    Layout = null; // Desativar o layout, se necessário
+    var blinkClass = "blinking-label"; // Definir a classe inicial
+}
+
+<div class="plan-options-container">
+    <div class="plan-option @(selectedPlan == Util.PlanType.Anual ? "selected" : "")">
+        <h5><p>Plano @Util.PlanType.Anual.ToString() por @planPrices[Util.PlanType.Anual] no Projeto AmigoDev.</p></h5>
+        @if (tipoPlano.Id == 0)
+        {
+            <button class="blinkClass blinking-label-1" onclick="() => SelectPlan(Util.PlanType.Anual)">Concordo com a Doação Voluntária para Acesso Anual</button>
+        }
+        <hr />
+        <h6>
+            1 - Para participar do Projeto AmigoDev da DevAIInAction.net pedimos seu apoio, para crescimento do projeto, por meio de um depósito no valor de R$ 9,99, para 1 ano de acesso, pela conta do Nubank ou de outros bancos, <br />
+            <p>
+                acesse o link para pagamento via pix:
+                <a href="https://nubank.com.br/cobrar/1iqpys/65a2a5be-e47b-4ca0-ae6f-515ca3d3bf25">AmigoDev - DevAIInAction.net</a>
+            </p>
+            <b>OBS:</b> Com esse ato estará apoiando o Projeto de Automação e Inteligência Artificial da DevAIInAction.net e contribuindo para evolução da tecnologia, para que tenha mais tempo para questões específicas de negócio, seus estudos e obtenção de certificações.<br /><br />
+            2 - Para solicitar acesso, expirado o período gratuito (15/01/2024 23:59:59), como também deseje falar de IA, entre outros assuntos nas linguagens de programação disponíveis no mercado: entre em nosso grupo,<br />
+            <p>
+                pelo link:
+                <a href="https://chat.whatsapp.com/BaO4tVDf0CW1rchVWQi3ry">Whatsapp - DevAIInAction.net.</a>
+            </p>
+        </h6>
+    </div>
+</div>
+<br />
+<style>
+    .gradiente-klin {
+        /* Gradiente linear */
+        background: linear-gradient(to bottom,#000080, #4B0082, #0000FF); /* Substitua esses códigos de cores pelos tons desejados */
+        /* Vendor prefixes para compatibilidade com navegadores mais antigos */
+        background: -webkit-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+        background: -moz-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+        background: -o-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+        width: 100%;
+        text-align: center;
+        border-radius: 10%;
+        border: 2px solid #ccc;
+        padding: 10px;
+    }
+
+    .blinking-label-1 {
+        /*animation: blink-animation infinite;*/
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        /*transition: background-color 0.6s ease;*/
+        /* Gradiente linear */
+        background: linear-gradient(to bottom,#B22222, #DC143C, #F08080); /* Substitua esses códigos de cores pelos tons desejados */
+        /* Vendor prefixes para compatibilidade com navegadores mais antigos */
+        background: -webkit-linear-gradient(to bottom, #B22222, #DC143C, #F08080);
+        background: -moz-linear-gradient(to bottom, #B22222, #DC143C, #F08080);
+        background: -o-linear-gradient(to bottom, #B22222, #DC143C, #F08080);
+    }
+
+    .blinking-label {
+        /*animation: blink-animation infinite;*/
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        /*transition: background-color 0.6s ease;*/
+        /* Gradiente linear */
+        background: linear-gradient(to bottom,#000080, #4B0082, #0000FF); /* Substitua esses códigos de cores pelos tons desejados */
+        /* Vendor prefixes para compatibilidade com navegadores mais antigos */
+        background: -webkit-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+        background: -moz-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+        background: -o-linear-gradient(to bottom, #000080, #4B0082, #0000FF);
+    }
+
+    .styled-div {
+        background-color: #f7f7f7;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    h4 {
+        color: white;
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    h6 {
+        color: white;
+        font-size: 14px;
+        margin-bottom: 10px;
+        align-content: flex-start;
+        text-align: left
+    }
+
+    p {
+        color: white;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .plan-options-container {
+        display: flex;
+        justify-content: space-around; /* ou outro valor de sua preferência */
+        flex-wrap: wrap; /* para que os itens quebrem para a próxima linha, se necessário */
+        gap: 20px; /* espaço entre os itens */
+    }
+
+    .plan-option {
+        border-radius: 10%;
+        background-color: lightslategray;
+        background-blend-mode: color-burn;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+    }
+</style>
+
+@functions {
+    private string blinkClass = "blinking-label";
+
+    // Lógica para alternar a classe de piscar
+    // private async Task ToggleBlinking()
+    // {
+    //     while (true)
+    //     {
+    //         await Task.Delay(1000); // Intervalo de tempo para alternar a classe (1 segundo no exemplo)
+
+    //         if (blinkClass == "blinking-label")
+    //             blinkClass = "";
+    //         else
+    //             blinkClass = "blinking-label";
+
+    //         InvokeAsync(StateHasChanged); // Notificar o Blazor que a classe foi atualizada
+    //     }
+    // }
+
+    Util.PlanType selectedPlan = Util.PlanType.Anual;
+
+    Dictionary<Util.PlanType, string> planPrices = new Dictionary<Util.PlanType, string>
+    {
+        { Util.PlanType.Mensal, "R$ 19,90" },
+        { Util.PlanType.Bimestral, "R$ 29,90" },
+        { Util.PlanType.Trimestral, "R$ 39,90" },
+        { Util.PlanType.Semestral, "R$ 59,90" },
+        { Util.PlanType.Anual, "R$ 9,99" },
+        { Util.PlanType.Business, "Entre em contato pelo Whatsapp: (11) 91399-3656" }
+    };
+
+    private void SelectPlan(Util.PlanType plan)
+    {
+        tipoPlano.Id = (Int16)plan;
+        tipoPlano.Name = plan.ToString();
+
+        selectedPlan = plan;
+    }
+
+    // protected override void OnInitialized()
+    // {
+    //     base.OnInitialized();
+
+    //     // Inicie a lógica de alternância de classe em uma thread separada
+    //     System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(ToggleBlinking));
+    //     thread.Start();
+    // }
+}

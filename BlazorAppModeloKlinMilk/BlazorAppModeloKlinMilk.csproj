@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Files\**" />
+    <Compile Remove="wwwroot\Speech\**" />
+    <Content Remove="Files\**" />
+    <Content Remove="wwwroot\Speech\**" />
+    <EmbeddedResource Remove="Files\**" />
+    <EmbeddedResource Remove="wwwroot\Speech\**" />
+    <None Remove="Files\**" />
+    <None Remove="wwwroot\Speech\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\ProjectEvaluation\slntemplate.metadata.v7.bin" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\ProjectEvaluation\slntemplate.projects.v7.bin" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\config\applicationhost.config" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\DesignTimeBuild\.dtbcache.v2" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\FileContentIndex\61aa29f2-9d49-485c-8323-1d00e94cf950.vsidx" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\FileContentIndex\af47fb86-7b13-431e-90e0-1df0b1f7f1f4.vsidx" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\FileContentIndex\c4413500-effe-4414-84dd-5f35f9599f4e.vsidx" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\.vs\SlnTemplate\v17\.futdcache.v2" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\Acesso.API\Acesso.API.csproj" />
+    <None Include="Files\Destiny\API-c9130750-4479-4f94-a5c6-62661d5e6367SlnAcesso\SlnAcesso.sln" />
+    <None Include="Files\Templates\MinimalAPI.DDD.Data\MinimalAPI.DDD.Data.csproj" />
+    <None Include="Files\Templates\MinimalAPI.DDD.Domain\MinimalAPI.DDD.Domain.csproj" />
+    <None Include="Files\Templates\MinimalAPI\.vs\ProjectEvaluation\slntemplate.metadata.v7.bin" />
+    <None Include="Files\Templates\MinimalAPI\.vs\ProjectEvaluation\slntemplate.projects.v7.bin" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\DesignTimeBuild\.dtbcache.v2" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\FileContentIndex\2978530e-6058-4914-b13e-fffd890afd84.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\FileContentIndex\43357ae5-b3b0-48bf-8141-f16656c42c86.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\FileContentIndex\81583a4e-cfed-4f41-9da7-da1db744317e.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\FileContentIndex\b806cf02-70e5-44eb-8497-4ac5a745c854.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\FileContentIndex\cca1ec6f-a2ee-4bd8-b128-f9dd3b00df86.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\.vs\SlnTemplate\v17\.futdcache.v2" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\ProjectEvaluation\slntemplate.metadata.v7.bin" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\ProjectEvaluation\slntemplate.projects.v7.bin" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\config\applicationhost.config" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\DesignTimeBuild\.dtbcache.v2" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\FileContentIndex\61aa29f2-9d49-485c-8323-1d00e94cf950.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\FileContentIndex\af47fb86-7b13-431e-90e0-1df0b1f7f1f4.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\FileContentIndex\c4413500-effe-4414-84dd-5f35f9599f4e.vsidx" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\.vs\SlnTemplate\v17\.futdcache.v2" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\SlnTemplate.sln" />
+    <None Include="Files\Templates\MinimalAPI\SlnTemplate\Template.API\Template.API.csproj" />
+    <None Include="wwwroot\css\styles.css" />
+    <None Include="wwwroot\images\MinhaFotoPerfil.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
+    <PackageReference Include="Azure.Storage.Files.Shares" Version="12.17.1" />
+    <PackageReference Include="JSZip" Version="3.7.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.JSInterop" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Speech" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MinimalAPI.DDD.Data\MetodoKlinMilk.Data.csproj" />
+    <ProjectReference Include="..\MinimalAPI.DDD.Domain\MetodoKlinMilk.Domain.csproj" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties wwwroot_4css_4bootstrap_4bootstrap_1min_1css_1map__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

@@ -1,0 +1,47 @@
+﻿@inherits LayoutComponentBase
+
+@using AppMVCDevAIInAction.Data
+@using AppMVCDevAIInAction.EF
+@using AppMVCDevAIInAction.Models
+
+@inject AcessoEntityModel appAcessoEntityModel
+
+<PageTitle>Portal DevAIInAction.net V.1.0.</PageTitle>
+
+<div class="page" style="background-color:black;">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+    <main>
+        <div class="top-row px-4" style="background-color:black;  align-items:baseline;">
+            <table style="width:100%">
+                <tr style="width:100%; color:black; color:white">
+                    <td style="width:80%;">
+                        <marquee behavior="scroll" direction="left">
+                            <RoundedImage /> Olá, seja bem vindo ao Portal DevAIInAction.net. Sou Klenio Leite, o idealizador e desenvolvedor analista desse projeto e me sinto honrado em compartilhar os recursos contidos no mesmo com você.
+                        </marquee>
+                    </td>
+                    <td style="text-align:right; width:20%;">
+                        DevAIInAction´s: <br />@usuarios
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+    private Int64 usuarios = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (Context dbContext = new Context())
+        {
+            if (dbContext.Acessos.Count() > 0)
+                usuarios = dbContext.Acessos.Count();
+        }
+    }
+}

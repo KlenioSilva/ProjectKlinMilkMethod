@@ -1,0 +1,56 @@
+﻿
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand"  href="">DevAIInAction.net</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+@if (AuthorizationService.IsAuthorized)
+{
+    <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <ul>
+                    <li>
+                        <NavLink class="nav-link" href="gerarapi" @onclick="ClicouNoMenu">
+                            <span class="oi oi-plus" aria-hidden="true"></span> Gerar API Mínima
+                        </NavLink>
+                        <ul>
+                            <li>
+                                <NavLink class="nav-link" href="/listaapi" @onclick="ClicouNoMenu">Downloads API´s</NavLink>
+                            </li>
+                           
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    if (!clicouNoMenu)
+    {
+        AuthorizationService.SetAuthorization(true);
+        NavigationManager.NavigateTo($"/GerarAPI/ ");
+    }
+}
+
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private bool temPastas = false;
+    private bool clicouNoMenu = false;
+
+    private void ClicouNoMenu()
+    {
+        clicouNoMenu = true;
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

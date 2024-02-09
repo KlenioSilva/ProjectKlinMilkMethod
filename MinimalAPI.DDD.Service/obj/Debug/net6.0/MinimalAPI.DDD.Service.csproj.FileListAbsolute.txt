@@ -1,0 +1,4 @@
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Service\obj\Debug\net6.0\MinimalAPI.DDD.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Service\obj\Debug\net6.0\MinimalAPI.DDD.Service.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Service\obj\Debug\net6.0\MinimalAPI.DDD.Service.AssemblyInfo.cs
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Service\obj\Debug\net6.0\MinimalAPI.DDD.Service.csproj.CoreCompileInputs.cache

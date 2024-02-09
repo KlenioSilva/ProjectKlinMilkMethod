@@ -1,0 +1,17 @@
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Data.deps.json
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Data.runtimeconfig.json
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Data.dll
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Data.pdb
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Domain.dll
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\bin\Release\net6.0\MetodoKlinMilk.Domain.pdb
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.csproj.AssemblyReference.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.AssemblyInfo.cs
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.csproj.CopyComplete
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.dll
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\refint\MetodoKlinMilk.Data.dll
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.pdb
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\MetodoKlinMilk.Data.genruntimeconfig.cache
+C:\Users\gabri\source\repos\MetodoKlinMilk\MinimalAPI.DDD.Data\obj\Release\net6.0\ref\MetodoKlinMilk.Data.dll

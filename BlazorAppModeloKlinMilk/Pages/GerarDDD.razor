@@ -1,0 +1,743 @@
+﻿@page "/gerarddd"
+
+@using BlazorAppModeloKlinMilk.CrossCutting
+@using Microsoft.AspNetCore.Components.Web
+@using BlazorAppModeloKlinMilk.Data
+@using BlazorAppModeloKlinMilk.Models
+@using BlazorAppModeloKlinMilk.EF
+@using Newtonsoft.Json
+@using System.Net
+@using System.Text
+
+@inject AcessoEntityModel appAcessoEntityModel
+
+@{
+    string opcao = this.escolha;
+}
+
+<PageTitle>Geração de Estrutura DDD</PageTitle>
+
+@if (!string.IsNullOrEmpty(mensagemDeErro))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensagemDeErro
+    </div>
+}
+<h2 style="color: lightgray">Portal DevAIInAction - Geração de DDD.</h2>
+<p style="color: lightgray">
+    Para fins de Aderência às Regras de Compliance das Empresas:
+    Nenhum Json para Geração das APIS Mínimmas, por meio desta ferramenta, será compartilhado com outros usuários do portal.
+</p>
+<table style="width:100%">
+    <tr style="width:100%">
+        <td style="width:70%">
+            <div class="form-group" style="background-color: lightgray">
+                Escolha como deseja gerar sua estrutura de API Mínima:
+                <br />
+                <input type="radio" id="porRota" name="escolha" @onclick="OptouPorRota" />
+                <label for="opcao1">Por API</label><br />
+
+                <input type="radio" id="porJson" name="escolha" @onclick="OptouPorJson" />
+                <label for="opcao2">Por Json</label><br />
+            </div>
+            @if (escolha == "porRota")
+            {
+                <div>
+                    <br />
+                    (Ex.: cliente, fornecedor, estoque, aluno, etc.)
+                    <input type="textarea" @bind="Conteudo" style="width:100%; background-color:lightblue" />
+                </div>
+                <br />
+                <div style="display: flex; justify-content: center; align-items: center; height: 5vh;">
+                    <button @onclick="GravarAPI" style="padding: 8px 16px;">Gravar</button>
+                </div>
+            }
+            else if (escolha == "porJson")
+            {
+                var email = appAcessoEntityModel.Email;
+                <table style="background-color:lightblue; height:358px; background-color:azure">
+                    <tr>
+                        <td>
+                            <div>
+                                Forceça o conteúdo Json, por meio dos passos abaixo.
+                                <input type="text" @bind="Conteudo" style="width:100%;" />
+                            </div>
+                            <br />
+                            Antes de enviar os dados para seu cadastro e geração de seu(s) projeto(s) de suas API´S, sem que tenhamos acesso ao seu banco de dados, a fim de gerarmos suas estruturas de CRUD, siga os seguintes passos:
+                            <br />
+                            1 - Crie a seguinte View em seu Banco de Dados, conforme sua sintaxe (Neste caso é o SQL ):
+                            <div>
+                                <input type="text" style="width:100%" disabled value="CREATE VIEW ColunasTabelasParaJson AS SELECT ROW_NUMBER() OVER (ORDER BY TABLE_NAME) AS Id, TABLE_NAME AS Tabela, COLUMN_NAME AS Coluna, DATA_TYPE AS Tipo, JsonIgnore = 'false' FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG = 'AquiDigiteSeuBancoDeDados' AND TABLE_SCHEMA = 'dbo' GO" />
+                            </div>
+                            <br />
+                            2 - Em seguida execute o seguinte código para geração do Json e upload para fins de geração de sua API Mínima.
+                            <div>
+                                <input type="text" style="width:100%" disabled value="DECLARE *JSON NVARCHAR(MAX) SET *JSON = (SELECT Id, Tabela, Coluna, Tipo, JsonIgnore FROM ColunasTabelasParaJson FOR JSON AUTO) SELECT *JSON AS 'JSON'" />
+                                OBS: Antes de executar essa geração do Json, em sua base de dados, substitua todos os asteríscos pelo símbolo arroba.
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <div style="display: flex; justify-content: center; align-items: center; height: 5vh;">
+                    <button @onclick="GravarAPI" style="padding: 8px 16px;">Gravar</button>
+                </div>
+            }
+        </td>
+
+        @if (escolha == "porJson")
+        {
+            <td style="width:30%; position:fixed">
+                <table class="table" border="1" color="white" style="height:430px; overflow:auto; background-color:azure">
+                    <thead>
+                        <tr style="background-color:lightgray;">
+                            <th style="width:70%">Tabela</th>
+                            <th style="width:30%">Check</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var option in options)
+                        {
+                            <tr>
+                                <td style="width:70%">@option.ToString()</td>
+                                <td style="width:30%">
+                                    <input type="checkbox" @bind="selectedOptions[option]" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div style="display: flex; justify-content: center; align-items: center; height: 5vh;">
+                    <button @onclick="OnInitialized" style="padding: 8px 16px;">Escolher Tabelas</button>
+                </div>
+            </td>
+        }
+    </tr>
+</table>
+
+@code {
+    private string escolha = new string("");
+    private string mensagemDeErro = "";
+    private string? Conteudo { get; set; }
+    private string? Chave { get; set; }
+    private bool primVez { get; set; } = true;
+    private bool devNovo { get; set; } = false;
+    private string authorizationKey = "";
+    private string msgChave = "";
+    private int dias = 0;
+    private string diasOuDia = "";
+
+    List<string> options = new List<string>();
+    Dictionary<string, bool> selectedOptions = new Dictionary<string, bool>();
+
+    private bool gravacaoHabilitada = false;
+
+    protected override void OnInitialized()
+    {
+        if (escolha != ""
+            && this.Conteudo != null
+            && this.Conteudo.Contains("[")
+            && this.Conteudo.Contains("{")
+            && this.Conteudo.Contains("}")
+            && this.Conteudo.Contains("]"))
+        {
+            options.Clear();
+            selectedOptions.Clear();
+            var tabelas = JsonConvert.DeserializeObject<List<ColunasTabelasEntityModel>>(this.Conteudo);
+            var tabs = tabelas.GroupBy(e => e.Tabela);
+            if (tabs != null)
+            {
+                int cont = 1;
+                foreach (var tabela in tabs)
+                {
+
+                    options.Add(tabela.Key);
+                    selectedOptions.Add(tabela.Key, false);
+                    cont++;
+                }
+            }
+        }
+        else
+            mensagemDeErro = "";
+    }
+
+    void OptouPorRota()
+    {
+        escolha = "porRota";
+        this.Conteudo = "";
+    }
+    void OptouPorJson()
+    {
+        escolha = "porJson";
+        this.Conteudo = "";
+    }
+
+    void GravarAPI()
+    {
+        try
+        {
+            if (this.Conteudo == "")
+            {
+                mensagemDeErro = "Informe um nome para geração de sua API, ou um Json para geração total ou parcial - por meio do botão [Escolher Tabelas] - das API´s.";
+                return;
+            }
+
+            string IPLocal = string.Empty;
+            string hostName = Dns.GetHostName();
+            IPAddress[] ipv4Addresses = Dns.GetHostAddresses(hostName);
+
+            foreach (IPAddress ip in ipv4Addresses)
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    IPLocal = ip.ToString();
+                }
+            }
+
+            using (Context dbContext = new Context())
+            {
+                string tabelasValidasJson = "";
+                bool projetoExiste = false;
+                var acesso = dbContext.Acessos.Where(p => p.IP == IPLocal).ToList();
+                if (acesso != null)
+                {
+                    if (this.Conteudo != null)
+                    {
+                        string chaveEstrutura = Guid.NewGuid().ToString();
+                        var acessoPorEmail = dbContext.Acessos.Where(x => x.Email == appAcessoEntityModel.Email).FirstOrDefault();
+                        if (acessoPorEmail != null)
+                        {
+                            var pastas = Util.ObterPastas(@"C:\inetpub\wwwroot\devaiinaction\Files\Destiny\");
+
+                            if (pastas.Count() > 0)
+                            {
+                                int cont = 1;
+                                foreach (var pasta in pastas)
+                                {
+                                    if (escolha == "porRota")
+                                    {
+                                        if (pasta.ToString().Contains(Util.FormatarTexto(this.Conteudo)))
+                                            projetoExiste = true;
+                                    }
+                                    else
+                                    {
+                                        foreach (var selec in selectedOptions)
+                                        {
+                                            if (selec.Value)
+                                            {
+                                                bool pastaExiste = false;
+                                                var estruturas = dbContext.Estruturas.Where(x => x.ChaveAcesso == acessoPorEmail.Chave).ToList();
+                                                if (estruturas != null)
+                                                {
+                                                    foreach (var estrut in estruturas)
+                                                    {
+                                                        if (estrut.Entidades.ToString().Contains(selec.Key))
+                                                        {
+                                                            pastaExiste = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+
+                                                if (!pastaExiste)
+                                                    tabelasValidasJson += selec.Key + "|";
+                                            }
+                                            cont++;
+                                            if (cont == selectedOptions.Count)
+                                                break;
+                                        }
+
+                                        if (cont == selectedOptions.Count)
+                                            break;
+                                    }
+                                }
+
+                                if (!projetoExiste)
+                                {
+                                    var estrutura = new EstruturaEntityModel();
+                                    if (escolha == "porRota")
+                                        estrutura = new EstruturaEntityModel() { ChaveAcesso = acessoPorEmail.Chave, ChaveEstrutura = chaveEstrutura, Conteudo = this.Conteudo, Entidades = Util.FormatarTexto(this.Conteudo), MesAno = DateTime.Now.Month.ToString("00") + DateTime.Now.Year.ToString().Substring(2, 2), Tipo = "API" };
+                                    else
+                                        estrutura = new EstruturaEntityModel() { ChaveAcesso = acessoPorEmail.Chave, ChaveEstrutura = chaveEstrutura, Conteudo = this.Conteudo, Entidades = tabelasValidasJson, MesAno = DateTime.Now.Month.ToString("00") + DateTime.Now.Year.ToString().Substring(2, 2), Tipo = "API" };
+
+                                    dbContext.Estruturas.Add(estrutura);
+                                    dbContext.SaveChanges();
+                                }
+                                else
+                                    mensagemDeErro = "O Projeto " + Util.FormatarTexto(this.Conteudo) + " já existe. Escolha um outro nome de projeto.";
+                            }
+                            else
+                            {
+                                int cont = 1;
+                                foreach (var selec in selectedOptions)
+                                {
+                                    if (selec.Value)
+                                    {
+                                        bool pastaExiste = false;
+                                        var estruturas = dbContext.Estruturas.Where(x => x.ChaveAcesso == acessoPorEmail.Chave).ToList();
+                                        if (estruturas != null)
+                                        {
+                                            foreach (var estrut in estruturas)
+                                            {
+                                                if (estrut.Entidades.ToString().Contains(selec.Key))
+                                                {
+                                                    pastaExiste = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (!pastaExiste)
+                                            tabelasValidasJson += selec.Key + "|";
+                                    }
+                                    cont++;
+                                    if (cont == selectedOptions.Count)
+                                        break;
+                                }
+
+                                if (selectedOptions.Count == 0 && escolha == "porJson")
+                                {
+                                    var tabelas = JsonConvert.DeserializeObject<List<ColunasTabelasEntityModel>>(this.Conteudo);
+                                    var tabs = tabelas.GroupBy(e => e.Tabela);
+                                    if (tabs != null)
+                                    {
+                                        foreach (var tab in tabs)
+                                        {
+                                            tabelasValidasJson += tab.Key + "|";
+                                        }
+                                    }
+                                }
+
+                                if (!projetoExiste)
+                                {
+                                    var estrutura = new EstruturaEntityModel();
+                                    if (escolha == "porRota")
+                                        estrutura = new EstruturaEntityModel() { ChaveAcesso = acessoPorEmail.Chave, ChaveEstrutura = chaveEstrutura, Conteudo = this.Conteudo, Entidades = Util.FormatarTexto(this.Conteudo), MesAno = DateTime.Now.Month.ToString("00") + DateTime.Now.Year.ToString().Substring(2, 2), Tipo = "API" };
+                                    else
+                                        estrutura = new EstruturaEntityModel() { ChaveAcesso = acessoPorEmail.Chave, ChaveEstrutura = chaveEstrutura, Conteudo = this.Conteudo, Entidades = tabelasValidasJson, MesAno = DateTime.Now.Month.ToString("00") + DateTime.Now.Year.ToString().Substring(2, 2), Tipo = "API" };
+
+                                    dbContext.Estruturas.Add(estrutura);
+                                    dbContext.SaveChanges();
+                                }
+                            }
+
+                            if (this.Conteudo.Contains("[")
+                             && this.Conteudo.Contains("{")
+                             && this.Conteudo.Contains("]")
+                             && this.Conteudo.Contains("}"))
+                            {
+                                var tabelas = JsonConvert.DeserializeObject<List<ColunasTabelasEntityModel>>(this.Conteudo);
+                                var tabs = tabelas.GroupBy(e => e.Tabela);
+                                if (tabs != null)
+                                {
+                                    bool selEspecifica = false;
+
+                                    foreach (var selec in selectedOptions)
+                                    {
+                                        if (selec.Value)
+                                        {
+                                            if (pastas.Count() > 0)
+                                            {
+                                                foreach (var pasta in pastas)
+                                                {
+                                                    if (escolha == "porRota")
+                                                    {
+                                                        if (pasta.ToString().Contains(Util.FormatarTexto(this.Conteudo)))
+                                                            projetoExiste = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        string tabelaNaPasta = pasta.ToString().Substring(pasta.IndexOf("Sln") + 3, pasta.Length - pasta.IndexOf("Sln") - 3);
+                                                        var estruturas = dbContext.Estruturas.Where(x => x.ChaveAcesso == appAcessoEntityModel.Email).ToList();
+                                                        if (estruturas != null)
+                                                        {
+                                                            foreach (var colEntity in estruturas)
+                                                            {
+                                                                if (colEntity.Entidades.ToString().Contains(tabelaNaPasta))
+                                                                    projetoExiste = true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                if (!projetoExiste)
+                                                {
+                                                    selEspecifica = true;
+                                                    CriarProjetosDDD(this.escolha, "Sln" + selec.Key, acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                                    if (errorMessage == "")
+                                                    {
+                                                        if (nvDiretorio != "" && pathSolution != "")
+                                                            CriarDDD(nvDiretorio + "\\", selec.Key, "Sln" + selec.Key, pathSolution, "SuaConnectionString");
+                                                    }
+                                                    else
+                                                        mensagemDeErro = errorMessage;
+                                                }
+                                                else
+                                                    mensagemDeErro = "O Projeto " + Util.FormatarTexto(this.Conteudo) + " já existe. Escolha um outro nome de projeto.";
+                                            }
+                                            else
+                                            {
+                                                selEspecifica = true;
+                                                CriarProjetosDDD(this.escolha, "Sln" + selec.Key, acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                                if (errorMessage == "")
+                                                {
+                                                    if (nvDiretorio != "" && pathSolution != "")
+                                                        CriarDDD(nvDiretorio + "\\", selec.Key, "Sln" + selec.Key, pathSolution, "SuaConnectionString");
+                                                }
+                                                else
+                                                    mensagemDeErro = errorMessage;
+
+                                            }
+                                        }
+
+                                    }
+                                    mensagemDeErro = "Projetos gerados: " + tabelasValidasJson;
+
+                                    if (!selEspecifica)
+                                    {
+                                        foreach (var tabela in tabs)
+                                        {
+                                            if (pastas.Count() > 0)
+                                            {
+                                                foreach (var pasta in pastas)
+                                                {
+                                                    if (escolha == "porRota")
+                                                    {
+                                                        if (pasta.ToString().Contains(Util.FormatarTexto(this.Conteudo)))
+                                                            projetoExiste = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        string tabelaNaPasta = pasta.ToString().Substring(pasta.IndexOf("Sln") + 3, pasta.Length - pasta.IndexOf("Sln") - 3);
+                                                        var estruturas = dbContext.Estruturas.Where(x => x.ChaveAcesso == appAcessoEntityModel.Email).ToList();
+                                                        if (estruturas != null)
+                                                        {
+                                                            foreach (var colEntity in estruturas)
+                                                            {
+                                                                if (colEntity.Entidades.ToString().Contains(tabelaNaPasta))
+                                                                    projetoExiste = true;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                if (!projetoExiste)
+                                                {
+                                                    CriarProjetosDDD(this.escolha, "Sln" + tabela.Key, acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                                    if (errorMessage == "")
+                                                    {
+                                                        if (nvDiretorio != "" && pathSolution != "")
+                                                        {
+                                                            CriarDDD(nvDiretorio + "\\", tabela.Key, "Sln" + tabela.Key, pathSolution, "SuaConnectionString");
+                                                            mensagemDeErro += tabela.Key + " | ";
+                                                        }
+                                                    }
+                                                    else
+                                                        mensagemDeErro = errorMessage;
+                                                }
+                                                else
+                                                    mensagemDeErro = "O Projeto " + Util.FormatarTexto(this.Conteudo) + " já existe. Escolha um outro nome de projeto.";
+                                            }
+                                            else
+                                            {
+                                                CriarProjetosDDD(this.escolha, "Sln" + tabela.Key, acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                                if (errorMessage == "")
+                                                {
+                                                    if (nvDiretorio != "" && pathSolution != "")
+                                                    {
+                                                        CriarDDD(nvDiretorio + "\\", tabela.Key, "Sln" + tabela.Key, pathSolution, "SuaConnectionString");
+                                                        mensagemDeErro += tabela.Key + " | ";
+                                                    }
+                                                }
+                                                else
+                                                    mensagemDeErro = errorMessage;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (pastas.Count() > 0)
+                                {
+                                    foreach (var pasta in pastas)
+                                    {
+                                        if (escolha == "porRota")
+                                        {
+                                            if (pasta.ToString().Contains(Util.FormatarTexto(this.Conteudo)))
+                                                projetoExiste = true;
+                                        }
+                                        else
+                                        {
+                                            string tabelaNaPasta = pasta.ToString().Substring(pasta.IndexOf("Sln") + 3, pasta.Length - pasta.IndexOf("Sln") - 3);
+                                            var estruturas = dbContext.Estruturas.Where(x => x.ChaveAcesso == appAcessoEntityModel.Email).ToList();
+                                            if (estruturas != null)
+                                            {
+                                                foreach (var colEntity in estruturas)
+                                                {
+                                                    if (colEntity.Entidades.ToString().Contains(tabelaNaPasta))
+                                                        projetoExiste = true;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (!projetoExiste)
+                                    {
+                                        CriarProjetosDDD(this.escolha, "Sln" + Util.FormatarTexto(this.Conteudo), acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                        if (errorMessage == "")
+                                        {
+                                            if (nvDiretorio != "" && pathSolution != "")
+                                            {
+                                                CriarDDD(nvDiretorio + "\\", Util.FormatarTexto(this.Conteudo), "Sln" + Util.FormatarTexto(this.Conteudo), pathSolution, "SuaConnectionString");
+                                                mensagemDeErro = "Projeto " + Util.FormatarTexto(this.Conteudo) + " gerado com sucesso.";
+                                            }
+                                        }
+                                        else
+                                            mensagemDeErro = errorMessage;
+                                    }
+                                    else
+                                        mensagemDeErro = "O Projeto " + Util.FormatarTexto(this.Conteudo) + " já existe. Escolha um outro nome de projeto.";
+                                }
+                                else
+                                {
+                                    CriarProjetosDDD(this.escolha, "Sln" + Util.FormatarTexto(this.Conteudo), acessoPorEmail.Chave, out string nvDiretorio, out string pathSolution, out string errorMessage);
+                                    if (errorMessage == "")
+                                    {
+                                        if (nvDiretorio != "" && pathSolution != "")
+                                        {
+                                            CriarDDD(nvDiretorio + "\\", Util.FormatarTexto(this.Conteudo), "Sln" + Util.FormatarTexto(this.Conteudo), pathSolution, "SuaConnectionString");
+                                            mensagemDeErro = "Projeto " + Util.FormatarTexto(this.Conteudo) + " gerado com sucesso.";
+                                        }
+                                    }
+                                    else
+                                        mensagemDeErro = errorMessage;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            mensagemDeErro = ex.Message;
+        }
+    }
+
+    static void CriarProjetosDDD(string escolha, string slnNome, string chave, out string nvDiretorio, out string pathSolution, out string errorMessage)
+    {
+        //Definir diretório no servidor quando o sistema for publicado em mvc
+        string dirOrigemAPI = @"C:\inetpub\wwwroot\devaiinaction\Files\Templates\MinimalAPI\SlnTemplate\";
+        string dirDestino = @"C:\inetpub\wwwroot\devaiinaction\Files\Destiny\";
+        nvDiretorio = string.Empty;
+        pathSolution = string.Empty;
+        errorMessage = string.Empty;
+
+        //Copiando o template do local de origem para o destino - Início
+        if (!Directory.Exists(dirDestino + "API-" + chave + slnNome))
+        {
+            Directory.CreateDirectory(dirDestino + "API-" + chave + slnNome);
+
+            Util.DirectoryCopy(dirOrigemAPI, dirDestino + "\\" + "API-" + chave + slnNome, true);
+            //Copiando o template do local de origem para o destino - Fim
+
+            //Atribuindo o pathSolution
+            pathSolution = dirDestino + "API-" + chave + slnNome + "\\";
+
+            // Renomeando o nome da pasta da solution criada no destino - Início
+            string diretorioAntigo = dirDestino + "API-" + chave + slnNome + "\\Template.API";
+            string novoNomeDiretorio = dirDestino + "API-" + chave + slnNome + "\\" + slnNome.Replace("sln", "").Replace("Sln", "") + ".API";
+            nvDiretorio = novoNomeDiretorio;
+
+            Directory.Move(diretorioAntigo, novoNomeDiretorio);
+            // Renomeando o nome da pasta da solution criada no destino - Fim
+
+            string caminhoArquivoAntigo = dirDestino + "API-" + chave + slnNome + "\\SlnTemplate.sln";
+            string novoNomeArquivo = dirDestino + "API-" + chave + slnNome + "\\" + slnNome + ".sln";
+
+            // Renomeia o arquivo
+            File.Move(caminhoArquivoAntigo, novoNomeArquivo);
+
+            string diretorioProjetoAPI = novoNomeDiretorio;
+
+            // Verificar se o diretório existe
+            if (Directory.Exists(diretorioProjetoAPI))
+            {
+                // Listar arquivos no diretório
+                string[] arquivos = Directory.GetFiles(diretorioProjetoAPI);
+
+                // Renomear cada arquivo com um novo nome
+                foreach (string arquivo in arquivos)
+                {
+                    // Extrair nome do arquivo e extensão
+                    string nomeArquivo = Path.GetFileNameWithoutExtension(arquivo);
+                    string extensao = Path.GetExtension(arquivo);
+                    string novoNome = string.Empty;
+                    // Novo nome desejado (neste exemplo, adicionando um sufixo "_renomeado")
+                    if (nomeArquivo.Contains("Template"))
+                    {
+                        novoNome = nomeArquivo.Replace("Template", slnNome.Replace("sln", "").Replace("Sln", "")) + extensao;
+
+                        // Caminho completo do arquivo com o novo nome
+                        string novoCaminho = Path.Combine(diretorioProjetoAPI, novoNome);
+
+                        // Renomear o arquivo
+                        File.Move(arquivo, novoCaminho);
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (escolha == "porRota")
+                errorMessage = "A API: " + slnNome.Replace("sln", "").Replace("Sln", "") + " já foi gerada anteriormente. Use outro nome.";
+            else
+                errorMessage = "Possivelmente você já gerou as API´s por esse Json; como por exemplo: " + slnNome.Replace("sln", "").Replace("Sln", "") + ". Clique no botão Escolher Tabelas e refaça o processo.";
+        }
+    }
+
+    static void CriarDDD(string path, string rota, string nomeSolucao, string? pathSolution, string? strConnectionString)
+    {
+        string[] buscaNameSpace = path.Split('\\');
+        string nameSpaceEncontrado = buscaNameSpace[buscaNameSpace.Length - 2].ToString()
+            .Replace(@"\", "");
+
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        if (!Directory.Exists(path + "\\Data"))
+            Directory.CreateDirectory(path + "\\Data");
+
+        if (!Directory.Exists(path + "\\Models"))
+            Directory.CreateDirectory(path + "\\Models");
+
+        //Alterando o conteúdo do arquivo .sln
+        string caminhoArquivoSln = string.Empty;
+        // Caminho do arquivo
+        if (pathSolution == null)
+            caminhoArquivoSln = Path.Combine(path.Replace(Util.FormatarTexto(rota) + ".API\\", ""), nomeSolucao + ".sln");
+        else
+            caminhoArquivoSln = Path.Combine(pathSolution, nomeSolucao + ".sln");
+
+        //Alterando o conteúdo do arquivo nomeArquivo.sln
+        var conteudo = "";
+        using (StreamReader writer = File.OpenText(caminhoArquivoSln))
+        {
+            conteudo = writer.ReadToEnd();
+
+            conteudo = conteudo.Replace("Template", nomeSolucao.Replace("sln", "").Replace("Sln", ""));
+        }
+
+        File.WriteAllText(caminhoArquivoSln, conteudo);
+
+        // Caminho do arquivo
+        string caminhoArquivoData = Path.Combine(path + "\\Data\\", "APIContext" + ".cs");
+        conteudo = "";
+        using (StreamReader reader = File.OpenText(caminhoArquivoData))
+        {
+            conteudo = reader.ReadToEnd();
+
+            conteudo = conteudo.Replace("$mapinamespace$", nameSpaceEncontrado.Replace("sln", "").Replace("Sln", ""))
+                .Replace("$FolderData$", "Data")
+                .Replace("$FolderModels$", "Models")
+                .Replace("Template", nomeSolucao.Replace("sln", ""))
+                .Replace("$DbConnectionName$", strConnectionString)
+                .Replace("$Entity$", Util.FormatarTexto(rota) + "Entity")
+                .Replace("$Tabela$", Util.FormatarTexto(rota))
+                .Replace("$PluralEntity$", Util.FormatarTexto(rota) + "s");
+        }
+
+        File.WriteAllText(caminhoArquivoData, conteudo);
+
+        // Caminho do arquivo
+        string caminhoArquivoModels = Path.Combine(path + "\\Models\\", "Entity" + ".cs");
+        conteudo = "";
+        using (StreamReader writer = File.OpenText(caminhoArquivoModels))
+        {
+            conteudo = writer.ReadToEnd();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            using (Context context = new Context())
+            {
+                var colunasTabela = Util.MeuRetornoDAOProcedureColunasTabelas().Where(x => x.Tabela == Util.FormatarTexto(rota)).AsEnumerable();
+
+                short cont = 1;
+                if (colunasTabela != null && colunasTabela.ToList().Count > 0)
+                {
+                    foreach (var colunas in colunasTabela)
+                    {
+                        if (cont == 1)
+                            stringBuilder.Append("public " + Util.AdaptaTipoSQLParaCSharp(colunas.Tipo) + " " + colunas.Coluna + " { get; set; }");
+                        else
+                            stringBuilder.Append("        public " + Util.AdaptaTipoSQLParaCSharp(colunas.Tipo) + " " + colunas.Coluna + " { get; set; }");
+                        stringBuilder.Append(Environment.NewLine);
+                        cont++;
+                    }
+                }
+                else
+                {
+                    stringBuilder.Append("    public int Id { get; set; }");
+                    stringBuilder.Append(Environment.NewLine);
+                    stringBuilder.Append("        public string? Nome { get; set; }");
+                }
+            }
+
+            conteudo = conteudo.Replace("Template", nomeSolucao.Replace("sln", "").Replace("Sln", ""))
+                .Replace("$Properties$", stringBuilder.ToString())
+                .Replace("$Entity$", Util.FormatarTexto(rota) + "Entity")
+                .Replace("$mapinamespace$", nameSpaceEncontrado.Replace("sln", "").Replace("Sln", "") + ".Models");
+        }
+
+        File.WriteAllText(caminhoArquivoModels, conteudo);
+
+        // Renomeia o arquivo
+        File.Move(caminhoArquivoModels, Path.Combine(Path.GetDirectoryName(caminhoArquivoModels), Util.FormatarTexto(rota) + "Entity.cs"));
+
+        // Caminho do arquivo
+        string caminhoArquivo = Path.Combine(path, "Program.cs");
+
+        //Alterando o conteúdo do arquivo Program.cs
+        conteudo = "";
+        using (StreamWriter writer = File.CreateText(caminhoArquivo))
+        {
+            using (var dbContext = new Context())
+            {
+                var snippetAPI = dbContext.Snippets.Where(x => x.Nome == "SnippetMinimalAPI").FirstOrDefault();
+
+                if (snippetAPI != null)
+                    conteudo = snippetAPI.Conteudo;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            string linha = "";
+            string textoGeral = "";
+            for (int i = 0; i <= conteudo.Length - 1; i++)
+            {
+                if (conteudo[i].ToString() != "\\")
+                    linha += conteudo[i];
+                else
+                {
+                    if (conteudo[i + 1].ToString() == "n")
+                    {
+                        textoGeral += linha.Replace("$mapinamespace$", nameSpaceEncontrado.Replace("sln", "").Replace("Sln", ""))
+                                           .Replace("$FolderData$", "Data")
+                                           .Replace("$FolderModels$", "Models")
+                                           .Replace("$VariableType$", rota)
+                                           .Replace("$VariableRoot$", rota.ToLower())
+                                           .Replace("$YourDbContextName$", "APIContext")
+                                           .Replace("$DbConnectionName$", strConnectionString)
+                                           .Replace("$PluralizeType$", Util.Pluralizar(Util.FormatarTexto(rota)))
+                                           .Replace("$Type$", Util.FormatarTexto(rota) + "Entity")
+                                           .Replace("$Tag$", Util.FormatarTexto(rota)) + Environment.NewLine;
+                        linha = "";
+                        i++;
+                    }
+                }
+            }
+
+            conteudo = textoGeral;
+
+            writer.Write(conteudo);
+        }
+    }
+}

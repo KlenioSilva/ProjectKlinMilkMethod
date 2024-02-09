@@ -1,0 +1,45 @@
+﻿@page "/agendainteligente"
+
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<h3>Agenda Inteligente</h3>
+
+<div>
+    <label for="datePicker">Selecione a Data:</label>
+    <input id="datePicker" type="date" @bind="selectedDate">
+
+    <label for="timePicker">Selecione a Hora:</label>
+    <input id="timePicker" type="time" @bind="selectedTime">
+
+    <label for="messageInput">Digite sua Mensagem:</label>
+    <input id="messageInput" type="text" @bind="message">
+
+    <button onclick="speakText(@message)">Agendar</button>
+</div>
+
+@code {
+    private DateTime selectedDate = DateTime.Today;
+    private TimeOnly selectedTime = TimeOnly.FromDateTime(DateTime.Now); // Inicializar com a hora atual.
+    private string message = "";
+
+    private async Task ScheduleAppointment()
+    {
+        // Converter a string de hora para um DateTime
+        TimeOnly timeOnly = selectedTime;
+
+        // Obter a mensagem a ser lida em voz alta
+        string message = "Sua mensagem a ser lida em voz alta";
+
+        // Invocar a função JavaScript para ler a mensagem em voz alta
+        await JSRuntime.InvokeVoidAsync("speakText", message);
+    }
+}
+
+<script>
+    function speakText(message) {
+        // Implementação da lógica para falar o texto
+        console.log("Mensagem a ser falada:", message);
+        // Implemente a lógica para falar a mensagem usando APIs de fala ou outras lógicas desejadas
+    }
+</script>

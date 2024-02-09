@@ -1,0 +1,75 @@
+﻿@using AppRazorDevAIInAction.Shared
+@using Microsoft.AspNetCore.Components
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AppRazorDevAIInAction</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AppRazorDevAIInAction.styles.css" asp-append-version="true" />
+    <link href="~/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        @* @if (AuthorizationService.IsAuthorized)
+        { *@
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Menu lateral -->
+                <nav class="NavMenuCssClass nav-scrollable col-md-2 d-none d-md-block bg-light sidebar">
+                    <div class="sidebar-sticky">
+                        <nav class="flex-column">
+                            <div class="nav-item px-3">
+                                <ul>
+                                    <li>
+                                        <NavLink class="nav-link" href="gerarapi" onclick="ClicouNoMenu">
+                                            <span class="oi oi-plus" aria-hidden="true"></span> Gerar API Mínima
+                                        </NavLink>
+                                        <ul>
+                                            <li>
+                                                <NavLink class="nav-link" href="/listaapi" onclick="ClicouNoMenu">Downloads API´s</NavLink>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </nav>
+
+                <!-- Conteúdo principal -->
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">@ViewData["Title"]</h1>
+                    </div>
+                    <div class="container">
+                        @RenderBody()
+                    </div>
+                </main>
+            </div>
+        </div>
+        @*}*@
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - AppRazorDevAIInAction - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

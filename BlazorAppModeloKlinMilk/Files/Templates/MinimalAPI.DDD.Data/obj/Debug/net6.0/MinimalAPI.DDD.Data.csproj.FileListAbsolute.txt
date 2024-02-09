@@ -1,0 +1,17 @@
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Data.deps.json
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Data.runtimeconfig.json
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Data.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Data.pdb
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Domain.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\bin\Debug\net6.0\MinimalAPI.DDD.Domain.pdb
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.csproj.AssemblyReference.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.AssemblyInfo.cs
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.csproj.CopyComplete
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\refint\MinimalAPI.DDD.Data.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.pdb
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\MinimalAPI.DDD.Data.genruntimeconfig.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Data\obj\Debug\net6.0\ref\MinimalAPI.DDD.Data.dll

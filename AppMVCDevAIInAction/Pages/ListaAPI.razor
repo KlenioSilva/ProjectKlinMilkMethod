@@ -1,0 +1,97 @@
+﻿@page "/ListaAPI"
+@using AppMVCDevAIInAction.Data
+@using AppMVCDevAIInAction.EF
+@using AppMVCDevAIInAction.Models
+@using AppMVCDevAIInAction.CrossCutting
+
+@using System;
+@using System.IO;
+@using System.Web;
+@using System.Net;
+@using System.IO.Compression;
+@using System.Threading.Tasks;
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JS
+@inject AcessoEntityModel appAcessoEntityModel
+
+@if (!string.IsNullOrEmpty(mensagemDeErro))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensagemDeErro
+    </div>
+}
+
+<table border="1" class="table" style="background-color:azure;">
+    <thead>
+        <tr>
+            <th>Projetos</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pasta in pastasDisponiveis)
+        {
+            <tr>
+                <td>
+                    @pasta
+                </td>
+                <td>
+                    <button @onclick="() => DownloadFileFromStream(pasta)">Baixar Pasta</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private string mensagemDeErro = "";
+    private IEnumerable<string> pastasDisponiveis;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (Context dbContext = new Context())
+        {
+            var acessoPorEmail = dbContext.Acessos.Where(x => x.Email == appAcessoEntityModel.Email).FirstOrDefault();
+            if (acessoPorEmail != null)
+            {
+                pastasDisponiveis = Util.ObterPastas(@"C:\inetpub\wwwroot\devaiinaction\Files\Destiny\");
+            }
+        }
+    }
+
+    private async Task DownloadFileFromStream(string pasta)
+    {
+        try
+        {
+            // Caminho local da pasta a ser compactada
+            string pastaParaCompactar = @"C:\inetpub\wwwroot\devaiinaction\Files\Destiny\" + pasta;
+            // Caminho local onde o arquivo a será salvo
+            string caminhoArquivoZip = pastaParaCompactar + ".zip";
+
+            if (!File.Exists(caminhoArquivoZip))
+            {
+                // Cria o arquivo ZIP localmente a partir do diretório
+                ZipFile.CreateFromDirectory(pastaParaCompactar, caminhoArquivoZip);
+
+            }
+            
+            byte[] arquivoBytes = Util.GetZipFileBytes(pastaParaCompactar);
+
+            // var fileStream = new MemoryStream(arquivoBytes);
+
+            // using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+            // await JS.InvokeVoidAsync(@"downloadFile", caminhoArquivoZip, streamRef);
+
+            await JS.InvokeVoidAsync("downloadFile", caminhoArquivoZip, Convert.ToBase64String(arquivoBytes));
+
+            mensagemDeErro = @"Download do arquivo realizado com sucesso.";
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+}
+

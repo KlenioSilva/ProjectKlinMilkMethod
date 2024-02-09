@@ -1,0 +1,11 @@
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\bin\Debug\net6.0\MinimalAPI.DDD.Domain.deps.json
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\bin\Debug\net6.0\MinimalAPI.DDD.Domain.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\bin\Debug\net6.0\MinimalAPI.DDD.Domain.pdb
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.AssemblyInfoInputs.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.AssemblyInfo.cs
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.csproj.CoreCompileInputs.cache
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\refint\MinimalAPI.DDD.Domain.dll
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\MinimalAPI.DDD.Domain.pdb
+C:\Users\gabri\source\repos\DEMOMINIMALAPI_SLN\MinimalAPI.DDD.Domain\obj\Debug\net6.0\ref\MinimalAPI.DDD.Domain.dll
